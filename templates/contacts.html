@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contacts</title>
+</head>
+<body>
+    {% for contact in result %}
+        <h1>{{ contact["id"] }}</h1>
+    
+        <h1>{{ contact["fname"] }}</h1>
+        
+        <h1>{{ contact["lname"] }}</h1>
+        
+        <h1>{{ contact["number"] }}</h1>
+    {% endfor %} 
+    <form action="/contacts" method="post">
+        <label for="id">ID: </label><br>
+        <input type="text" id="id" name="id"><br>
+        <label for="fname">First Name: </label><br>
+        <input type="text" id="fname" name="fname"><br><br>
+        <label for="lname">Last Name: </label><br>
+        <input type="text" id="lname" name="lname"><br>
+        <label for="number">Phone Number: </label><br>
+        <input type="text" id="number" name="number"><br><br>
+        <input type="submit" value="post">
+    </form>   
+</body>
+</html>
