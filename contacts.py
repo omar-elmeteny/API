@@ -5,6 +5,10 @@ from jinja2 import Environment, FileSystemLoader
 import os
 import webbrowser
 from flask_restful import Resource, Api
+import logging
+
+logging.basicConfig(filename='contacts.log' , level=logging.DEBUG , 
+format='%(asctime)s : %(name)s : %(levelname)s : %(message)s')
 
 
 app = flask.Flask(__name__, template_folder='templates')
@@ -17,14 +21,22 @@ env = Environment(loader=FileSystemLoader(templates_dir))
 #template = env.get_template('contacts.html')
 
 
+logging.info("Serving Flask app 'contacts'")
+logging.info("Debug mode: off")
+logging.warning("This is a development server. Do not use it in a production deployment. Use a production WSGI server instead")
+logging.info("Running on http://127.0.0.1:5000")
+
 @app.errorhandler(404)
 def error_page(e):
-    return "<h1>Page Not Found</h1>", 404
+	url = request.base_url
+	logging.error("Page not found, " + url + " is a wrong url 400-")
+	return "<h1>Page Not Found</h1>", 404
 
 
 @app.route('/', methods=['GET'])
 def home():
-    return "<h1>Hello World!</h1>"
+	logging.info("Running on http://127.0.0.1:5000/ (Homepage) 200-")
+	return "<h1>Hello World!</h1>"
 
 
 contacts = {}
@@ -69,10 +81,20 @@ contacts = {}
 
 class Contacts(Resource) :
 	def get(self, id):
+		logging.debug("ID = " + str(id))
+		if id == "all" :
+			logging.info("Running on http://127.0.0.1:5000/contacts/all (All Contacts Page) 200-")
+		elif int(id) >= 0:
+			logging.info("Running on http://127.0.0.1:5000/contacts/" + id + " (One Contact Page) 200-")    
 		with open('\API\contacts.json', 'r') as f:
 			contacts = json.load(f)
+			logging.debug("Contacts = " + str(contacts))
+		if id == "all" :
+			return contacts	
 		for contact in contacts :
+			logging.debug("Contact = " + str(contact))      
 			if contact["id"] == int(id):
+				logging.debug("Result = " + str(contact)) 
 				return contact
 		return None		 
 
@@ -105,7 +127,9 @@ api.add_resource(Contacts, '/contacts/<string:id>')
 
 @app.errorhandler(500)
 def error_page(e):
-    return "<h1>ID out of range</h1>", 500
+	url = request.base_url
+	logging.error("ID is out of range, " + url + " caused an internal server error 500-")
+	return "<h1>ID out of range</h1>", 500
 
 
 app.run()
